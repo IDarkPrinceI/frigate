@@ -10,23 +10,27 @@
     <title>Document</title>
     {{--css--}}
     <link rel="stylesheet" href="{{ asset('assets/css/jquery-ui.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
     {{--/css--}}
 
 </head>
 <body>
 
-@include('layouts.header')
+{{--@include('layouts.header')--}}
 
 @include('layouts.sidebar')
 
 @yield('content')
 
-@include('layouts.footer')
+{{--@include('layouts.footer')--}}
 
 {{--js--}}
 <script src={{ asset('assets/js/jquery-3.5.1.min.js') }}></script>
+<script src={{ asset('assets/js/bootstrap.js') }}></script>
+<script src={{ asset('assets/js/bootstrap.min.js') }}></script>
 <script src={{ asset('assets/js/main.js') }}></script>
+
 {{--/js--}}
 
 </body>
