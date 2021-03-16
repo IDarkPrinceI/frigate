@@ -13,12 +13,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-//Route::get('/', function () {
-//    return view('welcome');
-//});
 
 //главная страница
 Route::get('/', 'MainController@index')->name('main.index');
+//Route::get('/create', 'MainController@create')->name('main.create');
 
+
+Route::get('/create', 'CheckController@create')->name('check.create');
+Route::post('/store', 'CheckController@store')->name('check.store');
+Route::get('/edit/{id}', 'CheckController@edit')->name('check.edit');
+Route::post('/update/{id}', 'CheckController@update')->name('check.update');
+Route::delete('/dell/{id}', 'CheckController@dell')->name('check.dell');
 
 
