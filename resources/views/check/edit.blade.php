@@ -1,81 +1,32 @@
 @extends('layouts.layout')
 
 @section('content')
+    {{--Хлебные крошки--}}
+    <div class="mt-5 float-right">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a class="text-secondary" href="{{ route('main.index') }}">Главная</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Редактирование записи №{{ $check->id }}</li>
+            </ol>
+        </nav>
+    </div>
+    {{--/Хлебные крошки--}}
 
-    <a href="{{ route('main.index') }}" type="button" class="mt-4 btn btn-secondary">Назад</a>
+{{--    <a href="{{ route('main.index') }}" type="button" class="mt-4 btn btn-secondary">Назад</a>--}}
 
 
-    <div class="py-5 text-center">
+    <div class="py-5">
         <h2>Редактирование записи №{{ $check->id }}</h2>
     </div>
 
     <div class="container-fluid">
         <h4>Введите данные:</h4>
-        <form role="form" method="post" action="{{ route('check.update', ['id' => $check->id]) }}" class="needs-validation" novalidate="">
+        <form role="form" method="post" action="{{ route('check.update', ['id' => $check->id]) }}"
+              class="needs-validation" novalidate="">
             @csrf
-            <div class="row">
+            {{--Подключаемая форма ввода атрибутов--}}
+            @include('check.form')
 
-                <div class="col-md-6">
-                    <label for="object" class="form-label">Проверяемый СМП</label>
-                    <input type="text"
-                           name="object"
-                           class="form-control"
-                           id="object"
-                           placeholder=""
-                           value=""
-                           required="">
-                    <div class="invalid-feedback">
-                        Valid first name is required.
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <label for="control" class="form-label">Контролирующий орган</label>
-                    <input type="text"
-                           name="control"
-                           class="form-control"
-                           id="control"
-                           placeholder=""
-                           value=""
-                           required="">
-                    <div class="invalid-feedback">
-                        Valid last name is required.
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <label for="date_start" class="form-label">Дата начала проверки</label>
-                    <input type="text"
-                           name="date_start"
-                           class="form-control"
-                           id="date_start"
-                           placeholder=""
-                           value=""
-                           required="">
-                    <div class="invalid-feedback">
-                        Valid first name is required.
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <label for="date_finish" class="form-label">Дата окончания проверки</label>
-                    <input type="text"
-                           name="date_finish"
-                           class="form-control"
-                           id="date_finish"
-                           placeholder=""
-                           value=""
-                           required="">
-                    <div class="invalid-feedback">
-                        Valid last name is required.
-                    </div>
-                </div>
-
-                <hr class="my-4">
-
-                <button class="mt-4 w-100 btn btn-success btn-lg" type="submit">Сохранить изменения</button>
-
-            </div>
         </form>
     </div>
 

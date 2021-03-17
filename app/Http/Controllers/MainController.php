@@ -12,7 +12,7 @@ class MainController extends Controller
     public function index()
     {
        $checks = Check::query()
-           ->get();
+           ->paginate(15);
 //       dd($test);
         return view('index', compact('checks'));
     }
