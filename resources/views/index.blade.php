@@ -1,11 +1,36 @@
 @extends('layouts.layout')
 
 @section('content')
-
+    <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                Sony
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="#">Tablet</a>
+                <a class="dropdown-item" href="#">Smartphone</a>
+            </div>
+        </div>
+        <div class="btn-group">
+            <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+                Microsoft
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="#">Programs</a>
+                <a class="dropdown-item" href="#">Store</a>
+            </div>
+        </div>
+    </div>
     <div class="container-fluid">
         <div class="row" style="padding-top: 40px">
             <div class="justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
-                <h1 class="h2">Перечень плановых проверок</h1>
+                <h1 class="h2">Перечень плановых проверок
+{{--Для страницы результаты поиска--}}
+                    @if (Request::is('search'))
+                        после запроса: "{{ $wordsSearch }}"
+                    @endif
+                    {{--/Для страницы результаты поиска--}}
+                </h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <div class="mt-2 btn-group me-2">
                         {{--Кнопка добавления записей--}}
@@ -39,6 +64,22 @@
                             </form>
                         </div>
                         {{--/Поиск--}}
+                        {{--Excel--}}
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButtonExcel">
+                            <a class="dropdown-item" href="{{ route('exportExcel') }}">Экспорт</a>
+                            <a class="dropdown-item" href="{{ route('importExcel') }}">Импорт</a>
+                        </div>
+{{--                        <form action="{{ route('exportExcel') }}">--}}
+{{--                        <button type="submit"--}}
+{{--                                class="btn btn-sm btn-outline-secondary">Excel экспорт--}}
+{{--                        </button>--}}
+{{--                        </form>--}}
+{{--                        <form action="{{ route('importExcel') }}">--}}
+{{--                            <button type="submit"--}}
+{{--                                    class="btn btn-sm btn-outline-secondary">Excel импорт--}}
+{{--                            </button>--}}
+{{--                        </form>--}}
+                        {{--/Excel--}}
                         {{--Редактирование записи--}}
                         <button onclick="editCheck()" id="edit" disabled type="button"
                                 class="btn btn-sm btn-outline-secondary">Редактировать
@@ -81,8 +122,13 @@
                         @foreach($checks as $check)
                             <tr data-id="{{ $check->id }}" class="checkTable">
                                 <td>{{ $i }}</td>
-                                <td>{{ $check->object->name }}</td>
-                                <td>{{ $check->control->title }}</td>
+                                @if (Request::is('search'))
+                                    <td>{{ $check->object_name }}</td>
+                                    <td>{{ $check->control_title }}</td>
+                                @else
+                                    <td>{{ $check->object->name }}</td>
+                                    <td>{{ $check->control->title }}</td>
+                                @endif
                                 <td>{{ $check->date_start }}</td>
                                 <td>{{ $check->date_finish }}</td>
                                 <td>{{ $check->lasting }}</td>

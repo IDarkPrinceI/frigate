@@ -7,6 +7,7 @@ use App\Models\CheckObject;
 use App\Models\Control;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 class CheckController extends MainController
 {
@@ -72,13 +73,17 @@ class CheckController extends MainController
     }
 
 
-    public function search(Request $request)
+    public function search(Request $request) //поиск
     {
         $q = ($request->get('q'));
+        $wordsSearch = Check::cleanSearchString($q); //очищаем поисковый запрос
+        $checks = Check::getChecksToSearch($wordsSearch); //делаем выборку из реестра
+        $checksForExcel = $checks->map(function ($item) { //дублируем коллекцию
+           return $item;
+        });
+        $checksForExcel = Check::unsetRelevance($checksForExcel);//изменяем коллекцию для Excel
+        Session::put('search', $checksForExcel); //загрузка данных поиска в сессию для экспорта в Excel
 
-        $checks = Check::getProductToSearch($q);
-        $test = is_string($checks);
-//        dd($checks);
-        return view('index', compact('checks'));
+        return view('index', compact('checks', 'wordsSearch'));
     }
 }

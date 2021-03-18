@@ -11,9 +11,8 @@ class MainController extends Controller
     //главная страница
     public function index()
     {
-       $checks = Check::query()
-           ->paginate(15);
-//       dd($test);
+        $query = Check::query();
+        $checks = Check::paginateQuery($query);
         return view('index', compact('checks'));
     }
 

@@ -16,9 +16,8 @@ use Illuminate\Support\Facades\Route;
 
 //главная страница
 Route::get('/', 'MainController@index')->name('main.index');
-//Route::get('/create', 'MainController@create')->name('main.create');
 
-
+//Проверки
 Route::get('/create', 'CheckController@create')->name('check.create');
 Route::post('/store', 'CheckController@store')->name('check.store');
 Route::get('/edit/{id}', 'CheckController@edit')->name('check.edit');
@@ -26,4 +25,9 @@ Route::post('/update/{id}', 'CheckController@update')->name('check.update');
 Route::delete('/dell/{id}', 'CheckController@dell')->name('check.dell');
 Route::get('/dell/{id}', 'CheckController@dell')->name('check.dell');
 Route::get('/search', 'CheckController@search')->name('check.search');
+
+//Excel
+Route::get( '/export' , 'MaatwebsiteController@export')->name('exportExcel');
+Route::get( '/import' , 'MaatwebsiteController@import')->name('importExcel');
+
 

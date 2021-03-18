@@ -9,130 +9,131 @@ use Illuminate\Support\Str;
 
 class Check extends Model
 {
-//запрет на поля created_at и update_at
-    public $timestamps = false;
+    public $fillable = ['object_id', 'control_id', 'date_start', 'date_finish', 'lasting'];
 
-    //    мутатор для записи названии СМП с большой буквы
-    public function setObjectAttribute($value)
+
+    public $timestamps = false; //запрет на поля created_at и update_at
+
+
+    public function setObjectAttribute($value) //мутатор для записи названии СМП с большой буквы
     {
         $this->attributes['object'] = Str::title($value);
     }
 
 
-    //    мутатор для записи названии Объекта с большой буквы
-    public function setControlAttribute($value)
+    public function setControlAttribute($value) //мутатор для записи названии Объекта с большой буквы
     {
         $this->attributes['control'] = Str::title($value);
     }
 
 
-//    связь с таблицей Control
-    public function control()
+    public function control() //связь с таблицей Control
     {
         return $this->belongsTo(Control::class);
     }
 
-//    связь с таблицей CheckObject
-    public function object()
+
+    public function object() //связь с таблицей CheckObject
     {
         return $this->belongsTo(CheckObject::class);
     }
 
 
-//    получение релевантного списка для поиска
-    public static function getProductToSearch($baseSearch)
+    public static function calculateRelevence($baseSearchClear, $wordsSearch, $separateWord) //Задаем параметры релевантности
     {
-        $wordsSearch = self::cleanSearchString($baseSearch);
-        if (!$wordsSearch) {
-            return $products = "Ваш запрос слишком короткий";
-        }
-        $baseSearchClear = implode(' ', $wordsSearch);
-        $count = count($wordsSearch);
-        //значения каждого отдельного слова в названии СМП и Объекте проверки для расчета релевантности
-        $separateWordName = round((20 / $count), 2);
-        $separateWordDescription = round((10 / $count), 2);
-        //Задаем параметры релевантности
         //Условия для полного запроса в названии СМП и Объекте проверки
-        $relevance = "IF (`checks` . `object` LIKE '%" . $baseSearchClear . "%', 60, 0)";
-        $relevance .= " + IF (`checks` . `control` LIKE '%" . $baseSearchClear . "%', 60, 0)";
+        $relevance = "IF (`check_objects` . `name` LIKE '%" . $baseSearchClear . "%', 60, 0)";
+        $relevance .= " + IF (`controls` . `title` LIKE '%" . $baseSearchClear . "%', 60, 0)";
         $relevance .= " + IF (`checks` . `date_start` LIKE '%" . $baseSearchClear . "%', 60, 0)";
         $relevance .= " + IF (`checks` . `date_finish` LIKE '%" . $baseSearchClear . "%', 60, 0)";
         //Условия для каждого из слов запроса в названии СМП и Объекте проверки
         foreach ($wordsSearch as $word) {
-            $relevance .= " + IF (`checks` . `object` LIKE '%" . $word . "%', " . $separateWordName . ", 0)";
-            $relevance .= " + IF (`checks` . `control` LIKE '%" . $word . "%', " . $separateWordDescription . ", 0)";
-            $relevance .= " + IF (`checks` . `date_start` LIKE '%" . $word . "%', " . $separateWordDescription . ", 0)";
-            $relevance .= " + IF (`checks` . `date_finish` LIKE '%" . $word . "%', " . $separateWordDescription . ", 0)";
+            $relevance .= " + IF (`check_objects` . `name` LIKE '%" . $word . "%', " . $separateWord . ", 0)";
+            $relevance .= " + IF (`controls` . `title` LIKE '%" . $word . "%', " . $separateWord . ", 0)";
+            $relevance .= " + IF (`checks` . `date_start` LIKE '%" . $word . "%', " . $separateWord . ", 0)";
+            $relevance .= " + IF (`checks` . `date_finish` LIKE '%" . $word . "%', " . $separateWord . ", 0)";
         }
+        return $relevance;
+    }
+
+
+    public static function getQuery($relevance, $baseSearchClear, $wordsSearch, $count) //формирование запроса
+    {
         $query = Check::query()
-            ->select('checks.*')
-            //Создается новое поле "relevance", значение которого будет устанавливаться путем выполнения условий, записанных в $relevance
-            ->selectRaw("$relevance AS relevance")
+        ->join('check_objects', 'check_objects.id', '=', 'checks.object_id') //объединяем таблицы
+        ->join('controls', 'controls.id', '=', 'checks.control_id') //объединяем таблицы
+        ->select('checks.id', 'check_objects.name as object_name', 'controls.title as control_title', 'checks.date_start', 'checks.date_finish', 'checks.lasting') //выбираем данные
+        //Создается новое поле "relevance", значение которого будет устанавливаться путем выполнения условий, записанных в $relevance
+        ->selectRaw("$relevance AS relevance")
             ->orderBy('relevance', 'desc')
-            ->where('checks.object', 'like', '%' . $baseSearchClear . '%')
+            ->where('check_objects.name', 'like', '%' . $baseSearchClear . '%')
+            ->orWhere('controls.title', 'like', '%' . $baseSearchClear . '%')
             ->orWhere('checks.date_start', 'like', '%' . $baseSearchClear . '%')
             ->orWhere('checks.date_finish', 'like', '%' . $baseSearchClear . '%')
-            ->orWhere('checks.object', 'like', '%' . $wordsSearch[0] . '%');
+            ->orWhere('check_objects.name', 'like', '%' . $wordsSearch[0] . '%');
         for ($i = 1; $i < $count; $i++) {
-            $query = $query->orWhere('checks.object', 'like', $wordsSearch[$i]);
+            $query = $query->orWhere('check_objects.name', 'like', $wordsSearch[$i]);
         }
         $query = $query
-            ->orWhere('checks.control', 'like', '%' . $baseSearchClear . '%')
-            ->orWhere('checks.control', 'like', '%' . $wordsSearch[0] . '%');
+            ->orWhere('controls.title', 'like', '%' . $baseSearchClear . '%')
+            ->orWhere('controls.title', 'like', '%' . $wordsSearch[0] . '%');
         for ($i = 1; $i < $count; $i++) {
-            $query = $query->orWhere('products.control', 'like', $wordsSearch[$i]);
+            $query = $query
+                ->orWhere('controls.title', 'like', $wordsSearch[$i]);
         }
-        $checks = $query
-            ->paginate(15);
-        if ($checks[0] === null) {
+        return $query;
+    }
+
+//    получение релевантного списка для поиска
+    public static function getChecksToSearch($clearSearch)
+    {
+        $wordsSearch = self::explodeSearch($clearSearch); //разделяем поисковый запрос на отдельные слова
+        $baseSearchClear = implode(' ', $wordsSearch); //собираем уникальные слова в одну строку
+        $count = count($wordsSearch); //количество уникальных слов в запросе
+        $separateWord = round((20 / $count), 2); //значения каждого отдельного слова для расчета релевантности
+        $relevance = self::calculateRelevence($baseSearchClear, $wordsSearch, $separateWord); //задаем параметры релевантности
+        $query = self::getQuery($relevance, $baseSearchClear, $wordsSearch, $count); //формирование запроса
+        $checks = self::paginateQuery($query);
+//        if ($checks[0] === null) {
+        if ($checks === null) {
             $checks = "По вашему запросу '$baseSearchClear' ничего не найдено";
         }
         return $checks;
     }
 
-//    обработка поискового запроса
-    public static function cleanSearchString($baseSearch)
-    {
-        // заменить двойные пробелы на одинарные
-        $search = preg_replace('#\s+#u', ' ', $baseSearch);
-        $search = trim($search);
-        //Разделяем поисковый запрос на отдельные слова
 
+    public static function cleanSearchString($baseSearch) //обработка поискового запроса
+    {
+        $search = preg_replace('#\s+#u', ' ', $baseSearch); // заменить двойные пробелы на одинарные
+        return trim($search); //обрезать пробелы в начале и конце
+    }
+
+    public static function explodeSearch($search) //Разделяем поисковый запрос на отдельные слова
+    {
         $baseWordsSearch = explode(' ', $search);
         $wordsSearch = [];
         foreach ($baseWordsSearch as $word) {
-            //для латиницы
-            if (preg_match('/[zA-Za]/i', $word)) {
-                //если слово больше 3х букв
-                if (strlen($word) > 3) {
-                    if (strlen($word) > 7) {
-                        $word = substr($word, 0, (strlen($word) - 2));
-                        array_push($wordsSearch, $word);
-                    } elseif (strlen($word) > 5) {
-                        $word = substr($word, 0, (strlen($word) - 1));
-                        array_push($wordsSearch, $word);
-                    } else {
-                        array_push($wordsSearch, $word);
-                    }
-                }
-                //Для кирилицы
-            } elseif (strlen($word) > 6) {
-                //если слово больше 6х букв
-                if (strlen($word) > 14) {
-                    $word = substr($word, 0, (strlen($word) - 4));
-                    array_push($wordsSearch, $word);
-                } elseif (strlen($word) > 10) {
-                    $word = substr($word, 0, (strlen($word) - 2));
-                    array_push($wordsSearch, $word);
-                } else {
-                    array_push($wordsSearch, $word);
-                }
-            }
+            array_push($wordsSearch, $word);
         }
-        if (empty($wordsSearch)) {
-            return null;
-        } else {
-            return array_unique($wordsSearch);
-        }
+        return array_unique($wordsSearch); //возвращаем массив уникальных слов запроса
     }
+
+    public static function paginateQuery($query) //пагинируем запрос
+    {
+        $checks = $query
+            ->paginate(15);
+        return $checks;
+    }
+
+    public static function unsetRelevance($checksForExcel) //редактируем для экспорта в Excel
+    {
+        for ($i = 0; $i < count($checksForExcel); $i++) {
+            $checksForExcel[$i]['id'] = $i + 1; //заменяем id на цифру номера
+            unset($checksForExcel[$i]['relevance']); //убираем графу релевантность
+        }
+        $firstItem = collect(['№', 'СМП', 'Контролирующий орган', 'Дата начала проверки', 'Дата окончания проверки', 'Длительность']);
+        $checksForExcel->prepend($firstItem);// добавляем заголовки
+        return $checksForExcel;
+    }
+
 }
