@@ -11,6 +11,15 @@ use Illuminate\Support\Facades\Session;
 
 class CheckController extends MainController
 {
+    //главная страница
+    public function index()
+    {
+        $checks = Check::query()
+            ->with('control', 'object') //жадная загрузка
+            ->paginate(15);
+        return view('index', compact('checks'));
+    }
+
     public function create()
     {
         $objects = CheckObject::query()
@@ -78,6 +87,9 @@ class CheckController extends MainController
         $q = ($request->get('q'));
         $wordsSearch = Check::cleanSearchString($q); //очищаем поисковый запрос
         $checks = Check::getChecksToSearch($wordsSearch); //делаем выборку из реестра
+        if (is_string($checks)) {
+            return view('index', compact('checks', 'wordsSearch'));
+        }
         $checksForExcel = $checks->map(function ($item) { //дублируем коллекцию
            return $item;
         });
@@ -85,5 +97,18 @@ class CheckController extends MainController
         Session::put('search', $checksForExcel); //загрузка данных поиска в сессию для экспорта в Excel
 
         return view('index', compact('checks', 'wordsSearch'));
+    }
+
+
+    public function object($data)
+    {
+        $objects = CheckObject::query()
+//            ->where('name', 'like', $data)
+            ->where('id', '=', $data)
+            ->get();
+        $html =  view('check.include', compact('objects'))->render();
+//        dd($html);
+        return response()->json(compact('html'));
+//        return response()->json(array('$objects' => $objects), 200);
     }
 }

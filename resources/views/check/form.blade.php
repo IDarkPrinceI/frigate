@@ -2,6 +2,32 @@
 <div class="row">
     {{--Название СМП--}}
     <div class="col-md-6">
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">Выберите СМП
+                </button>
+                <div id="divObject">
+                    @include('check.include')
+
+                </div>
+
+                {{--                <div class="dropdown-menu">--}}
+{{--                    @if(!empty($checkObjects))--}}
+{{--                        @foreach($checkObjects as $object)--}}
+{{--                            <a class="dropdown-item" href="#">{{ $object->name }}</a>--}}
+{{--                            <a class="dropdown-item" href="#">Another action</a>--}}
+{{--                            <a class="dropdown-item" href="#">Something else here</a>--}}
+{{--                            <div role="separator" class="dropdown-divider"></div>--}}
+{{--                            <a class="dropdown-item" href="#">Separated link</a>--}}
+{{--                        @endforeach--}}
+{{--                    @endif--}}
+{{--                </div>--}}
+                <input id="inputObject" type="text" class="form-control" aria-label="Text input with dropdown button">
+            </div>
+        </div>
+
+
         <label for="object" class="form-label">Проверяемый СМП</label>
         <select
             name="object"

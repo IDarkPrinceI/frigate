@@ -9,7 +9,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     {{--css--}}
-    <script src="https://kit.fontawesome.com/6a83091d59.js" crossorigin="anonymous"></script>
+    {{--    <script src="https://kit.fontawesome.com/6a83091d59.js" crossorigin="anonymous"></script> //иконки--}}
 
     <link rel="stylesheet" href="{{ asset('assets/css/jquery-ui.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
@@ -18,13 +18,9 @@
 </head>
 <body>
 
-{{--@include('layouts.header')--}}
-
-{{--@include('layouts.sidebar')--}}
 <div class="container">
-@yield('content')
-    </div>
-{{--@include('layouts.footer')--}}
+    @yield('content')
+</div>
 
 {{--Модальное окно удаления--}}
 <div class="modal fade" id="dellModal" tabindex="-1" role="dialog" aria-labelledby="dellModal" aria-hidden="true">
@@ -42,7 +38,9 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
-                <button onclick="dellCheck()" id="dellButton" type="button" class="btn btn-danger">Подтвердить удаление</button>
+                <button onclick="dellCheck()" id="dellButton" type="button" class="btn btn-danger">Подтвердить
+                    удаление
+                </button>
             </div>
         </div>
     </div>
@@ -56,9 +54,9 @@
 <script src={{ asset('assets/js/bootstrap.bundle.min.js') }}></script>
 <script src={{ asset('assets/js/bootstrap.js') }}></script>
 <script src={{ asset('assets/js/bootstrap.min.js') }}></script>
-<script src={{ asset('assets/js/jquery-ui.min.js') }}></script>  {{--календарь--}}
+<script src={{ asset('assets/js/jquery-ui.min.js') }}></script> {{--календарь--}}
 <script src={{ asset('assets/js/jquery.ui.datepicker-ru.js') }}></script> {{--календарь--}}
-<script src={{ asset('assets/js/main.js') }}></script>  {{--мои скрипты--}}
+<script src={{ asset('assets/js/main.js') }}></script> {{--мои скрипты--}}
 
 {{--/js--}}
 

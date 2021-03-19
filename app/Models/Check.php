@@ -81,6 +81,8 @@ class Check extends Model
             $query = $query
                 ->orWhere('controls.title', 'like', $wordsSearch[$i]);
         }
+        $query = $query
+            ->get();
         return $query;
     }
 
@@ -93,12 +95,10 @@ class Check extends Model
         $separateWord = round((20 / $count), 2); //значения каждого отдельного слова для расчета релевантности
         $relevance = self::calculateRelevence($baseSearchClear, $wordsSearch, $separateWord); //задаем параметры релевантности
         $query = self::getQuery($relevance, $baseSearchClear, $wordsSearch, $count); //формирование запроса
-        $checks = self::paginateQuery($query);
-//        if ($checks[0] === null) {
-        if ($checks === null) {
-            $checks = "По вашему запросу '$baseSearchClear' ничего не найдено";
+        if ( $query->isEmpty() ) {
+            $query = "По вашему запросу '$baseSearchClear' ничего не найдено";
         }
-        return $checks;
+        return $query;
     }
 
 
@@ -118,12 +118,6 @@ class Check extends Model
         return array_unique($wordsSearch); //возвращаем массив уникальных слов запроса
     }
 
-    public static function paginateQuery($query) //пагинируем запрос
-    {
-        $checks = $query
-            ->paginate(15);
-        return $checks;
-    }
 
     public static function unsetRelevance($checksForExcel) //редактируем для экспорта в Excel
     {

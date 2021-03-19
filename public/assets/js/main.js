@@ -40,13 +40,14 @@ function dellCheck(event) {
             $("#dellModal").modal('hide')
             //Перезагрузка вывода рееста
             $("#table").load(location.href + " #table")
+            //проверка на наличие данных в таблице #checkBody
+            checkData()
         },
         error: function () {
             alert('Ошибка')
         }
     })
 }
-
 //Функция редактировать
 function editCheck() {
     const edit = $('#edit')
@@ -81,6 +82,38 @@ $("#findFormButton").on('click', function () {
 $(document).ready(function(){
     $('li.active>span').addClass("bg-secondary border-dark")
 });
+//Проверка на наличие данных в таблице #checkBody
+function checkData() {
+    setTimeout(function () { // если удаляемый объект был последним на странице,
+        if ($.trim($("#checkBody").text() ) === '') {
+            document.location.href = 'http://project/'; // то будет произведен redirect на главную
+        }
+    }, 500)
+}
+
+$("body").on('input keyup', '#inputObject', function () {
+    const data = ($(this).val())
+    $.ajax({
+        headers: {
+            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+        },
+        url: '/object/' + data,
+        // data: {data: data},
+        dataType: 'json',
+        type: 'GET',
+        success: function (res) {
+            console.log(res)
+            // $("#divObject").html(res)
+            $("#divObject").html(res.html)
+            // $("#divObject").html(res)
+        },
+        error: function () {
+            console.log('Ошибка')
+        }
+    })
+})
+
+
 
 
 

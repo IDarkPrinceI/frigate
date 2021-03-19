@@ -11,15 +11,15 @@ class MaatwebsiteController extends Controller
 {
     public function export() //экспорт результатов поиска в Excel
     {
-        return Excel::download(new ChecksExport, 'checks.xlsx');
+        return Excel::download(new ChecksExport, 'checksExport.xlsx');
     }
 
-    public function import()
+    public function import() //импорт записей в БД из файла Excel
     {
         Session::forget('excel');
-        Excel::import(new ChecksImport(), 'checks (2).xlsx');
+        Excel::import(new ChecksImport(), 'checksImport.xlsx');
 
-        return redirect()->route('main.index')->with('success', 'All good!');
+        return redirect()->route('main.index');
     }
 
 }

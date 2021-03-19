@@ -5,7 +5,6 @@ namespace App\Imports;
 use App\Models\Check;
 use App\Models\CheckObject;
 use App\Models\Control;
-use Illuminate\Support\Facades\Session;
 use Maatwebsite\Excel\Concerns\ToCollection;
 
 class ChecksImport implements ToCollection
@@ -14,39 +13,22 @@ class ChecksImport implements ToCollection
     {
         $countWrite = 0; //счетчик импортированных записей
         $countOverlapping = 0; //счетчик дублирующих записей
-        $i = 0; //переменная для записи ошибок
         $rows->forget(0); //удалить из импортированной таблицы заголовки
+        $errors = []; //массив с ошибками
 
         foreach ($rows as $row) { //перебор коллекции для id элементов
-            $object = CheckObject::query()
-                ->where('name', '=', $row[1])
-                ->first();
-            if ( empty($object) ) { //если запись с таким названием не найдена
-                Session::put("excel.error.$i", "Импортируемый файл содержит ошибки в строке №\"$row[0]\" в названии проверяемого объекта \"$row[1]\". Эта запись не была импортирована");
-                $i++;
+            $object = self::getRecord(CheckObject::class, 'name', $row[1]); //получение id объекта
+            if ( empty($object) ) { //если запись с таким названием не найдена прерываем итерацию, записываем ошибку
+                array_push($errors, " Строка №$row[0]. Название проверяемого объекта \"$row[1]\" не найдено в базе. Эта запись не была импортирована.");
                 continue;
             }
-            $control = Control::query()
-                ->where('title', '=', $row[2])
-                ->first();
-            if ( empty($control) ) {
-                Session::put("excel.error.$i", "Импортируемый файл содержит ошибки в строке №\"$row[0]\" в названии контролирующего органа \"$row[2]\". Эта запись не была импортирована");
-                $i++;
+            $control = self::getRecord(Control::class, 'title', $row[2]); //получение id объекта
+            if ( empty($control) ) { //если запись с таким названием не найдена прерываем итерацию, записываем ошибку
+                array_push($errors," Строка №$row[0]. Название контролирующего органа \"$row[2]\" не найдено в базе. Эта запись не была импортирована.");
                 continue;
             }
-            $date_start = $row[3];
-            $date_finish = $row[4];
-            $lasting = $row[5];
-            $check = Check::query() // поиск проверки на совпадения целой строки из импортированного файла
-                ->where([
-                    ['object_id', '=', $object->id],
-                    ['control_id', '=', $control->id],
-                    ['date_start', '=', $date_start],
-                    ['date_finish', '=', $date_finish],
-                    ['lasting', '=', $lasting],
-                ])
-                ->first();
-            if (empty($check)) { //если проверка не найдена, создается новая запись
+
+            if ( empty( self::getTryString($object, $control, $row) ) ) { //если проверка не найдена, создается новая запись
                 $newCheck = new Check;
                 $newCheck->object_id = $object->id;
                 $newCheck->control_id = $control->id;
@@ -54,13 +36,37 @@ class ChecksImport implements ToCollection
                 $newCheck->date_finish = $row[4];
                 $newCheck->lasting = $row[5];
                 $newCheck->save();
-                $countWrite++;
+                $countWrite++; //увеличиваем счетчик импортированных записей
             } else { //если проверка найдена, создается запись о дублировании
-                $countOverlapping++;
-                Session::put('excel.overlapping.total', "Импортируемый файл содержит \"$countOverlapping\" дублирующих записей. Эти записи не были импортированы");
-                Session::put("excel.overlapping.$row[0]", "Дублирующая строка №$row[0].");
+                $countOverlapping++; //увеличиваем счетчик дублирующих записей
+                array_push($errors, " Дублирующая строка №$row[0].");
             }
         }
-        Session::put('excel.count', $countWrite); // сохранение количесва импортированных зайписей
+        array_push($errors, " Импортируемый файл содержит \"$countOverlapping\" дублирующих записей. Эти записи не были импортированы.");
+        session()->flash('success', " Успешно импортированно $countWrite записей(сь).");
+        session()->flash('error', $errors);
+    }
+
+    public function getRecord($model, $column, $object) //нахождение записи
+    {
+        $record = $model::query()
+            ->where($column, '=', $object)
+            ->first();
+        return $record;
+    }
+
+
+    public function getTryString($object, $control, $row)
+    {
+        $check = Check::query() // поиск записи в БД на совпадения целой строки из импортированного файла
+        ->where([
+            ['object_id', '=', $object->id],
+            ['control_id', '=', $control->id],
+            ['date_start', '=', $row[3]],
+            ['date_finish', '=', $row[4]],
+            ['lasting', '=', $row[5]],
+        ])
+            ->first();
+        return $check;
     }
 }
