@@ -16,10 +16,15 @@ class MaatwebsiteController extends Controller
 
     public function import() //импорт записей в БД из файла Excel
     {
-        Session::forget('excel');
-        Excel::import(new ChecksImport(), 'checksImport.xlsx');
-
+        Session::forget('excel'); // очищаем сессию от старой записи
+        if ( file_exists(public_path('/checksImport.xlsx') ) ) { // проверяем, есть ли файл для загрузки
+            Excel::import(new ChecksImport(), 'checksImport.xlsx'); //импортируем
+            return redirect()->route('main.index');
+        }
+        $error = array('Файл checksImport.xlsx для импорта не обнаружен'); //записываем ошибку
+        session()->flash('error', $error);
         return redirect()->route('main.index');
+
     }
 
 }
