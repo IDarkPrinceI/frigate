@@ -3,14 +3,12 @@
 
 namespace App\Models;
 
-
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class Check extends Model
 {
-    public $fillable = ['object_id', 'control_id', 'date_start', 'date_finish', 'lasting'];
-
 
     public $timestamps = false; //запрет на поля created_at и update_at
 
@@ -60,11 +58,11 @@ class Check extends Model
     public static function getQuery($relevance, $baseSearchClear, $wordsSearch, $count) //формирование запроса
     {
         $query = Check::query()
-        ->join('check_objects', 'check_objects.id', '=', 'checks.object_id') //объединяем таблицы
-        ->join('controls', 'controls.id', '=', 'checks.control_id') //объединяем таблицы
-        ->select('checks.id', 'check_objects.name as object_name', 'controls.title as control_title', 'checks.date_start', 'checks.date_finish', 'checks.lasting') //выбираем данные
-        //Создается новое поле "relevance", значение которого будет устанавливаться путем выполнения условий, записанных в $relevance
-        ->selectRaw("$relevance AS relevance")
+            ->join('check_objects', 'check_objects.id', '=', 'checks.object_id') //объединяем таблицы
+            ->join('controls', 'controls.id', '=', 'checks.control_id') //объединяем таблицы
+            ->select('checks.id', 'check_objects.name as object_name', 'controls.title as control_title', 'checks.date_start', 'checks.date_finish', 'checks.lasting') //выбираем данные
+            //Создается новое поле "relevance", значение которого будет устанавливаться путем выполнения условий, записанных в $relevance
+            ->selectRaw("$relevance AS relevance")
             ->orderBy('relevance', 'desc')
             ->where('check_objects.name', 'like', '%' . $baseSearchClear . '%')
             ->orWhere('controls.title', 'like', '%' . $baseSearchClear . '%')
@@ -95,7 +93,7 @@ class Check extends Model
         $separateWord = round((20 / $count), 2); //значения каждого отдельного слова для расчета релевантности
         $relevance = self::calculateRelevence($baseSearchClear, $wordsSearch, $separateWord); //задаем параметры релевантности
         $query = self::getQuery($relevance, $baseSearchClear, $wordsSearch, $count); //формирование запроса
-        if ( $query->isEmpty() ) {
+        if ($query->isEmpty()) {
             $query = "По вашему запросу '$baseSearchClear' ничего не найдено";
         }
         return $query;
@@ -130,4 +128,28 @@ class Check extends Model
         return $checksForExcel;
     }
 
+
+    public static function writeAttribute($check, $request) //запись атрибутов
+    {
+        $object_id = CheckObject::getId($request); //получение id СМП
+        $control_id = Control::getId($request); //получение id Контроля
+
+        $check->object_id = $object_id->id;
+        $check->control_id = $control_id->id;
+        $dateStart = Carbon::parse($request->date_start);
+        $dateFinish = Carbon::parse($request->date_finish);
+        $dif = $dateFinish->diff($dateStart)->days; //длительность проверки
+        $check->date_start = Carbon::parse($dateStart)->format('d.m.Y');
+        $check->date_finish = Carbon::parse($dateFinish)->format('d.m.Y');
+        $check->lasting = $dif;
+        return $check;
+    }
+
+
+    public static function getCheck($id) //получение записи проверки
+    {
+        $check = Check::query()
+            ->find($id);
+        return $check;
+    }
 }

@@ -1,93 +1,47 @@
 {{--Подключаемая форма ввода атрибутов--}}
 <div class="row">
     {{--Название СМП--}}
-    <div class="col-md-6">
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-toggle="dropdown"
-                        aria-haspopup="true" aria-expanded="false">Выберите СМП
-                </button>
-                <div id="divObject">
-                    @include('check.include')
-
-                </div>
-
-                {{--                <div class="dropdown-menu">--}}
-{{--                    @if(!empty($checkObjects))--}}
-{{--                        @foreach($checkObjects as $object)--}}
-{{--                            <a class="dropdown-item" href="#">{{ $object->name }}</a>--}}
-{{--                            <a class="dropdown-item" href="#">Another action</a>--}}
-{{--                            <a class="dropdown-item" href="#">Something else here</a>--}}
-{{--                            <div role="separator" class="dropdown-divider"></div>--}}
-{{--                            <a class="dropdown-item" href="#">Separated link</a>--}}
-{{--                        @endforeach--}}
-{{--                    @endif--}}
-{{--                </div>--}}
-                <input id="inputObject" type="text" class="form-control" aria-label="Text input with dropdown button">
-            </div>
-        </div>
-
-
+    <div class="col-md-12">
         <label for="object" class="form-label">Проверяемый СМП</label>
-        <select
-            name="object"
-            class="form-control @error('object') is-invalid @enderror"
-            id="object">
-            @if( empty($check) )
-                <option
-                    selected="true"
-                    disabled="disabled">Выберите СМП
-                </option>
-            @endif
-            {{--Выпадающий список--}}
-            @foreach($objects as $key => $object)
-                <option
-                    @if( !empty($check) && $check->object_id == $object->id) selected @endif
-                @if( old('object') && old('object') == $object->id) selected @endif
-                    id="{{ $object->id }}"
-                    value="{{ $object->id }}"
-                >{{ $object->name }}
-                </option>
-            @endforeach
-            {{--Выпадающий список--}}
-            <div class="invalid-feedback">
-                Valid first name is required.
+        <div class="input-group">
+            <div id="divObject" class="input-group-prepend">
+                @include('check.includeObject')
             </div>
-        </select>
+            <input id="inputObject" type="text" class="form-control"
+                   placeholder="Поиск...">
+            <input name="object"
+                   id="object"
+                   type="text"
+                   class="form-control"
+                   placeholder="Выбранный проверяемый СМП"
+                   value="{{ $check->object->name ?? old('object') }}"
+                   readonly
+            >
+
+        </div>
     </div>
     {{--/Название СМП--}}
     {{--Контролирующий орган--}}
-    <div class="col-md-6">
+    <div class="col-md-12">
         <label for="control" class="form-label">Контролирующий орган</label>
-        <select
-            name="control"
-            class="form-control @error('control') is-invalid @enderror"
-            id="control">
-            @if( empty($check) )
-                <option
-                    selected="true"
-                    disabled="disabled">Выберите контролирующий орган
-                </option>
-            @endif
-            {{--Выпадающий список--}}
-            @foreach($controls as $key => $control)
-                <option
-                    @if( !empty($check) && $check->control_id == $control->id) selected @endif
-                @if( old('control') && old('control') == $control->id) selected @endif
-                    id="{{ $control->id }}"
-                    value="{{ $control->id }}"
-                >{{ $control->title }}
-                </option>
-            @endforeach
-            {{--Выпадающий список--}}
-            <div class="invalid-feedback">
-                Valid first name is required.
+        <div class="input-group">
+            <div id="divControl" class="input-group-prepend">
+                @include('check.includeControl')
             </div>
-        </select>
+            <input id="inputControl" type="text" class="form-control"
+                   placeholder="Поиск...">
+            <input name="control"
+                   id="control"
+                   type="text"
+                   class="form-control"
+                   placeholder="Выбранный контролирующий орган"
+                   value="{{ $check->control->title ?? old('control') }}"
+                   readonly>
+        </div>
     </div>
     {{--/Контролирующий орган--}}
     {{--Дата начала проверки--}}
-    <div class="col-md-6">
+    <div class="col-md-6 mt-3">
         <label for="date_start" class="form-label">Дата начала проверки</label>
         <input type="text"
                name="date_start"
@@ -95,14 +49,15 @@
                id="date_start"
                placeholder="Выберите дату начала"
                value="{{ $check->date_start ?? old('date_start') }}"
-               required="">
+               required=""
+               autocomplete="off">
         <div class="invalid-feedback">
             Valid first name is required.
         </div>
     </div>
     {{--/Дата начала проверки--}}
     {{--Дата окончания проверки--}}
-    <div class="col-md-6">
+    <div class="col-md-6 mt-3">
         <label for="date_finish" class="form-label">Дата окончания проверки</label>
         <input type="text"
                name="date_finish"
@@ -110,7 +65,8 @@
                id="date_finish"
                placeholder="Выберите дату окончания"
                value="{{ $check->date_finish ?? old('date_finish') }}"
-               required="">
+               required=""
+               autocomplete="off">
         <div class="invalid-feedback">
             Valid last name is required.
         </div>

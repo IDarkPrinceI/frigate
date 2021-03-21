@@ -17,22 +17,11 @@
                     <div class="btn-group" role="group">
                         <div class="mt-2 btn-group me-2">
                             {{--Кнопка добавления записей--}}
-                            <button class="border-right-0 btn btn-sm btn-outline-secondary dropdown-toggle"
-                                    type="button"
-                                    id="dropdownMenuButton"
-                                    data-toggle="dropdown"
-                                    aria-haspopup="true"
-                                    aria-expanded="false">Добавить запись в реестр
-                            </button>
+                            <a href="{{ route('check.create') }}"
+                               type="button"
+                               class="border-right-0 btn btn-sm btn-outline-secondary">Добавить запись в реестр
+                            </a>
                             {{--/Кнопка добавления записей--}}
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="list-group-item-light dropdown-item" href="{{ route('check.create') }}">Добавить
-                                    запись о
-                                    проверке</a>
-                                <a class="list-group-item-light dropdown-item" href="#">Добавить объект проверки</a>
-                                <a class="list-group-item-light dropdown-item" href="#">Добавить контролирующий
-                                    орган</a>
-                            </div>
                             {{--Кнопка для отображения формы поиска--}}
                             <button id="findFormButton"
                                     type="button"
@@ -56,7 +45,8 @@
                                     </button>
                                 </form>
                             </div>
-                            {{--/Поиск--}}                            {{--Кнопка "сбросить поиск" для страницы search--}}
+                            {{--/Поиск--}}
+                            {{--Кнопка "сбросить поиск" для страницы search--}}
                             @if (Request::is('search'))
                                 <a href="{{ route('main.index') }}"
                                    type="button"
@@ -84,13 +74,37 @@
                             </button>
                             {{--/Удаление записи--}}
                             {{--Excel--}}
-                            <a class="btn btn-sm btn-outline-secondary"
+{{--                            <a class="btn btn-sm btn-outline-secondary"--}}
+{{--                               @if (!Request::is('search'))--}}
+{{--                               href="{{ route('importExcel') }}">Импорт--}}
+{{--                                @else--}}
+{{--                                    href="{{ route('exportExcel') }}">Экспорт--}}
+{{--                                @endif Excel--}}
+{{--                            </a>--}}
+
                                @if (!Request::is('search'))
-                               href="{{ route('importExcel') }}">Импорт
+                                <button
+                                    id="modalImport"
+                                    data-toggle="modal"
+                                    data-target="#importModal"
+                                    type="button"
+                                    class="btn btn-sm btn-outline-secondary">Импорт Excel
+                                </button>
                                 @else
-                                    href="{{ route('exportExcel') }}">Экспорт
-                                @endif Excel
-                            </a>
+                                <a class="btn btn-sm btn-outline-secondary"
+                                href="{{ route('exportExcel') }}">Экспорт--}}
+                                </a>
+                                @endif
+
+{{--                            <form class="btn btn-sm btn-outline-secondary" action="">--}}
+{{--                                <button class="btn btn-sm btn-outline-secondary">--}}
+{{--                                    123--}}
+{{--                                </button>--}}
+{{--                                <div class="custom-file">--}}
+{{--                                    <input type="file" class="btn btn-sm btn-outline-secondary custom-file-input" id="inputGroupFile01">--}}
+{{--                                    <label class=" btn btn-sm btn-outline-secondary custom-file-label" for="inputGroupFile01">Choose file</label>--}}
+{{--                                </div>--}}
+{{--                            </form>--}}
                             {{--/Excel--}}
                         </div>
                     </div>

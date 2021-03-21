@@ -41,10 +41,16 @@ class ChecksImport implements ToCollection
                 $countOverlapping++; //увеличиваем счетчик дублирующих записей
                 array_push($errors, " Дублирующая строка №$row[0].");
             }
+        } // запись флеш сообщений
+        if ($countOverlapping !== 0) { //если есть дублирующие записи
+            array_push($errors, " Импортируемый файл содержит \"$countOverlapping\" дублирующих записей. Эти записи не были импортированы.");
         }
-        array_push($errors, " Импортируемый файл содержит \"$countOverlapping\" дублирующих записей. Эти записи не были импортированы.");
-        session()->flash('success', " Успешно импортированно $countWrite записей(сь).");
-        session()->flash('error', $errors);
+        if ($countWrite !==0) { //если есть удачно импортированные записи
+            session()->flash('success', " Успешно импортированно $countWrite записей(сь).");
+        }
+        if (!empty($errors) ) { //если есть ошибки
+            session()->flash('error', $errors);
+        }
     }
 
     public function getRecord($model, $column, $object) //нахождение записи

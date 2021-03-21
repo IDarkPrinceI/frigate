@@ -1,29 +1,4 @@
 
-// Передача параметров в модальное окно для удаления записи
-$("body").on('click', '#checkBody', function (event) {
-    const click = event.target
-    const parent = click.closest("tr")
-    if (parent.classList.contains("bg-secondary")) {
-        console.log(parent)
-        parent.classList.remove('bg-secondary')
-        $('#modalDell').attr('disabled', true)
-        $('#edit').attr('disabled', true)
-    } else {
-        $("#checkBody tr").each(function () {
-            $(this).removeClass("bg-secondary")
-            parent.classList.add("bg-secondary")
-            const id = parent.getAttribute('data-id')
-            $('#modalDell').attr({'data-id': id})
-            $('#edit').attr({'data-id': id})
-            $('#modalDell').attr('disabled', false)
-            $('#edit').attr('disabled', false)
-            $('#dellButton').attr({'data-id': id})
-        })
-    }
-
-
-})
-
 //Функция удалить
 function dellCheck(event) {
     const dellButton = $('#dellButton')
@@ -34,7 +9,6 @@ function dellCheck(event) {
         },
         url: '/dell/' + id,
         type: 'delete',
-        data: {id: id},
         success: function () {
             // Закрытие модального окна
             $("#dellModal").modal('hide')
@@ -53,11 +27,7 @@ function editCheck() {
     const edit = $('#edit')
     const id = edit.attr('data-id')
     $.ajax({
-        headers: {
-            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-        },
         url: '/edit/' + id,
-        data: {id: id},
         success: function () {
             location.href = '/edit/' + id;
         },
@@ -66,11 +36,12 @@ function editCheck() {
         }
     })
 }
+
 // Календарь
-$(function() {
+$(function () {
     $("#date_start").datepicker($.datepicker.regional["ru"]);
 });
-$(function() {
+$(function () {
     $("#date_finish").datepicker($.datepicker.regional["ru"]);
 });
 
@@ -78,40 +49,90 @@ $(function() {
 $("#findFormButton").on('click', function () {
     $("#findForm").toggleClass('d-none')
 })
+
 // Задание серого background'а и border'а для активного span пагинации
-$(document).ready(function(){
+$(document).ready(function () {
     $('li.active>span').addClass("bg-secondary border-dark")
 });
+
 //Проверка на наличие данных в таблице #checkBody
 function checkData() {
     setTimeout(function () { // если удаляемый объект был последним на странице,
-        if ($.trim($("#checkBody").text() ) === '') {
+        if ($.trim($("#checkBody").text()) === '') {
             document.location.href = 'http://project/'; // то будет произведен redirect на главную
         }
     }, 500)
 }
 
-$("body").on('input keyup', '#inputObject', function () {
-    const data = ($(this).val())
-    $.ajax({
-        headers: {
-            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-        },
-        url: '/object/' + data,
-        // data: {data: data},
-        dataType: 'json',
-        type: 'GET',
-        success: function (res) {
-            console.log(res)
-            // $("#divObject").html(res)
-            $("#divObject").html(res.html)
-            // $("#divObject").html(res)
-        },
-        error: function () {
-            console.log('Ошибка')
+$("body")
+    .on('click', "#dropDownObject", function (event) { //обработчик клика на выпадающий список при выборе СМП
+        if (event.target.nodeName === 'LI') {
+            $("#object").val(event.target.textContent)
+            $("#dropDownObject, #divObject").removeClass('show') //закрыть выпадающий список
         }
     })
-})
+    .on('click', "#dropDownControl", function (event) { //обработчик клика на выпадающий список при выборе Контроля
+        if (event.target.nodeName === 'LI') {
+            $("#control").val(event.target.textContent)
+            $("#dropDownControl, #divControl").removeClass('show') //закрыть выпадающий список
+        }
+    })
+    .on('click', '#checkBody', function (event) { // Передача параметров в модальное окно для удаления записи
+        const click = event.target
+        const parent = click.closest("tr") //выбрать родительскую строчку в таблице
+        if (parent.classList.contains("bg-secondary")) { //убрать старое выделение записи при клике
+            parent.classList.remove('bg-secondary')
+            $('#modalDell').attr('disabled', true) //заблокировать кнопку удалить
+            $('#edit').attr('disabled', true) //заблокировать кнопку редактировать
+        } else {
+            $("#checkBody tr").each(function () {
+                $(this).removeClass("bg-secondary") //убрать старое выделение записи при клике
+                parent.classList.add("bg-secondary")
+                const id = parent.getAttribute('data-id')
+                $('#modalDell').attr({'data-id': id, 'disabled': false}) //активировать кнопку удалить/присвоить id для индефикации
+                $('#edit').attr({'data-id': id, 'disabled': false}) //активировать кнопку редактировать/присвоить id для индефикации
+                $('#dellButton').attr('data-id', id) // передача id в модальное окно для удаления записи
+            })
+        }
+    })
+
+$("#inputControl") //формирования выпадающего списка контроля при поиске
+    .on('input keyup', function () {
+        let data = ($(this).val())
+        $.ajax({
+            url: '/include/',
+            data: {data: data,
+                  type: 'control'},
+            dataType: 'json',
+            success: function (res) {
+                $("#divControl").html(res.html) //вставка нового выпадающего списка
+                $("#dropDownControl").addClass('show') //открыть выпадающий список
+            },
+            error: function () {
+                console.log('Ошибка')
+            }
+        })
+    })
+
+$("#inputObject") //формирования выпадающего списка контроля при поиске
+    .on('input keyup', function () {
+        let data = ($(this).val())
+        $.ajax({
+            url: '/include/',
+            data: {data: data,
+                  type: 'object'},
+            dataType: 'json',
+            success: function (res) {
+                $("#divObject").html(res.html) //вставка нового выпадающего списка
+                $("#dropDownObject").addClass('show') //открыть выпадающий список
+            },
+            error: function () {
+                console.log('Ошибка')
+            }
+        })
+    })
+
+
 
 
 
