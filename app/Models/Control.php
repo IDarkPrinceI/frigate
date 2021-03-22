@@ -7,10 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Control extends Model
 {
-//запрет на поля created_at и update_at
-    public $timestamps = false;
-
-
     public static function searchControls($data) //формирование выпадающего списка контролей
     {
         $controls = Control::query() //формирование запроса на наличие данных с input

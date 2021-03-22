@@ -24,7 +24,6 @@ Route::get('/search', 'CheckController@search')->name('check.search'); //пои�
 Route::get('/include/', 'CheckController@include')->name('check.include'); //формирование выпадающих списков
 //Excel
 Route::get( '/export' , 'MaatwebsiteController@export')->name('exportExcel'); //экспорт
-//Route::get( '/import' , 'MaatwebsiteController@import')->name('importExcel'); //импорт
 Route::post( '/import' , 'MaatwebsiteController@import')->name('importExcel'); //импорт
 
 

@@ -7,19 +7,18 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Реестр проверок</title>
     {{--css--}}
-    {{--    <script src="https://kit.fontawesome.com/6a83091d59.js" crossorigin="anonymous"></script> //иконки--}}
-
     <link rel="stylesheet" href="{{ asset('assets/css/jquery-ui.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
     {{--/css--}}
 
 </head>
 <body>
-
 <div class="container">
+    {{--подключаемый контент--}}
     @yield('content')
+    {{--//подключаемый контент--}}
 </div>
 
 {{--Модальное окно удаления--}}
@@ -73,14 +72,12 @@
                             </div>
                         </div>
                     </form>
-
                 </div>
             </div>
         </div>
     </div>
 </div>
 {{--/Модальное окно импорта Excel--}}
-
 
 {{--js--}}
 <script src={{ asset('assets/js/jquery-3.5.1.min.js') }}></script>
@@ -90,7 +87,6 @@
 <script src={{ asset('assets/js/jquery-ui.min.js') }}></script> {{--календарь--}}
 <script src={{ asset('assets/js/jquery.ui.datepicker-ru.js') }}></script> {{--календарь--}}
 <script src={{ asset('assets/js/main.js') }}></script> {{--мои скрипты--}}
-
 {{--/js--}}
 
 </body>

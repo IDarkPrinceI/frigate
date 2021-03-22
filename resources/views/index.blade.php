@@ -1,10 +1,9 @@
 @extends('layouts.layout')
 
 @section('content')
-
+{{--главная страница --}}
     <div class="container-fluid">
         <div class="row" style="padding-top: 40px">
-
             <div class="justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3">
                 <h1 class="h2">Перечень плановых проверок
                     {{--Для страницы результаты поиска--}}
@@ -74,15 +73,7 @@
                             </button>
                             {{--/Удаление записи--}}
                             {{--Excel--}}
-{{--                            <a class="btn btn-sm btn-outline-secondary"--}}
-{{--                               @if (!Request::is('search'))--}}
-{{--                               href="{{ route('importExcel') }}">Импорт--}}
-{{--                                @else--}}
-{{--                                    href="{{ route('exportExcel') }}">Экспорт--}}
-{{--                                @endif Excel--}}
-{{--                            </a>--}}
-
-                               @if (!Request::is('search'))
+                            @if (!Request::is('search'))
                                 <button
                                     id="modalImport"
                                     data-toggle="modal"
@@ -90,30 +81,20 @@
                                     type="button"
                                     class="btn btn-sm btn-outline-secondary">Импорт Excel
                                 </button>
-                                @else
+                            @else
                                 <a class="btn btn-sm btn-outline-secondary"
-                                href="{{ route('exportExcel') }}">Экспорт--}}
+                                   href="{{ route('exportExcel') }}">Экспорт Excel
                                 </a>
-                                @endif
-
-{{--                            <form class="btn btn-sm btn-outline-secondary" action="">--}}
-{{--                                <button class="btn btn-sm btn-outline-secondary">--}}
-{{--                                    123--}}
-{{--                                </button>--}}
-{{--                                <div class="custom-file">--}}
-{{--                                    <input type="file" class="btn btn-sm btn-outline-secondary custom-file-input" id="inputGroupFile01">--}}
-{{--                                    <label class=" btn btn-sm btn-outline-secondary custom-file-label" for="inputGroupFile01">Choose file</label>--}}
-{{--                                </div>--}}
-{{--                            </form>--}}
+                            @endif
                             {{--/Excel--}}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        {{--Подлкючение вывода флешсообщений--}}
+        {{--Подключение вывода флешсообщений--}}
         @include('layouts.alert')
-        {{--/Подлкючение вывода флешсообщений--}}
+        {{--/Подключение вывода флешсообщений--}}
         <div id="table" class="table-responsive border-bottom">
             @if( !is_string($checks) )
                 <table class="table table-striped table-sm">

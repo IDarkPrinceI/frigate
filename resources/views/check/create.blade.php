@@ -17,8 +17,7 @@
     </div>
     <div class="container-fluid">
         <h4>Введите данные:</h4>
-{{--        <form role="form" method="post" action="{{ route('check.store') }}" class="needs-validation" novalidate="">--}}
-        <form role="form" method="post" action="{{ route('check.store') }}" class="needs-validation">
+        <form role="form" method="post" action="{{ route('check.store') }}" class="needs-validation" novalidate="">
             @csrf
             {{--Подключаемая форма ввода атрибутов--}}
             @include('check.form')

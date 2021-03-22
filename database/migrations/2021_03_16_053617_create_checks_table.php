@@ -21,14 +21,6 @@ class CreateChecksTable extends Migration
             $table->string('date_finish');
             $table->integer('lasting');
         });
-//        Schema::create('checks', function (Blueprint $table) {
-//            $table->increments('id');
-//            $table->string('object');
-//            $table->string('control');
-//            $table->string('date_start');
-//            $table->string('date_finish');
-//            $table->integer('lasting');
-//        });
     }
 
     /**

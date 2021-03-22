@@ -12,12 +12,11 @@
             <input name="object"
                    id="object"
                    type="text"
-                   class="form-control"
+                   class="form-control @error('object') is-invalid @enderror"
                    placeholder="Выбранный проверяемый СМП"
                    value="{{ $check->object->name ?? old('object') }}"
                    readonly
             >
-
         </div>
     </div>
     {{--/Название СМП--}}
@@ -33,7 +32,7 @@
             <input name="control"
                    id="control"
                    type="text"
-                   class="form-control"
+                   class="form-control @error('control') is-invalid @enderror"
                    placeholder="Выбранный контролирующий орган"
                    value="{{ $check->control->title ?? old('control') }}"
                    readonly>

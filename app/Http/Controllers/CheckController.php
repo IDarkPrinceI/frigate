@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreChecksRequest;
 use App\Models\Check;
 use App\Models\CheckObject;
 use App\Models\Control;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
-class CheckController extends MainController
+class CheckController extends Controller
 {
     //главная страница
     public function index()
@@ -28,7 +29,8 @@ class CheckController extends MainController
     }
 
 
-    public function store(Request $request) //сохранение записи
+//    public function store(Request $request) //сохранение записи
+    public function store(StoreChecksRequest $request) //сохранение записи
     {
         $check = new Check();
         $check = Check::writeAttribute($check, $request); //запись атрибутов
@@ -46,7 +48,7 @@ class CheckController extends MainController
     }
 
 
-    public function update($id, Request $request) //обновление записи
+    public function update($id, StoreChecksRequest $request) //обновление записи
     {
         $check = Check::getCheck($id); //получение записи проверки
         $check = Check::writeAttribute($check, $request); //запись атрибутов

@@ -1,6 +1,7 @@
 @extends('layouts.layout')
 
 @section('content')
+
     {{--Хлебные крошки--}}
     <div class="mt-5 float-right">
         <nav aria-label="breadcrumb">
@@ -11,10 +12,6 @@
         </nav>
     </div>
     {{--/Хлебные крошки--}}
-
-{{--    <a href="{{ route('main.index') }}" type="button" class="mt-4 btn btn-secondary">Назад</a>--}}
-
-
     <div class="py-5">
         <h2>Редактирование записи №{{ $check->id }}</h2>
     </div>

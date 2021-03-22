@@ -7,10 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class CheckObject extends Model
 {
-    //запрет на поля created_at и update_at
-    public $timestamps = false;
-
-
     public static function searchCheckObjects($data) //формирование выпадающего списка СМП
     {
         $objects = CheckObject::query() //формирование запроса на наличие данных с input
